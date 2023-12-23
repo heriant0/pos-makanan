@@ -11,6 +11,7 @@ type AuthToken struct {
 }
 
 type AuthTokenPayload struct {
-	Id int `json:"id"`
+	Id    int    `json:"id"`
 	Email string `json:"email"`
+	Role  string `json:"role"`
 }

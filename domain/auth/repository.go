@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	EmailIsRequired = errors.New("email is required")
-	EmailIsInvalid  = errors.New("email is invalid")
-	PasswordIsEmpty = errors.New("password is empty")
-	PasswordLength  = errors.New("password length must be greater than equal 6")
-	DuplicateEntry  = errors.New("email already used")
-	ErrorRepository = errors.New("error repository")
-	UnknownError    = errors.New("unknown error")
+	EmailIsRequired     = errors.New("email is required")
+	EmailIsInvalid      = errors.New("email is invalid")
+	PasswordIsEmpty     = errors.New("password is empty")
+	PasswordLength      = errors.New("password length must be greater than equal 6")
+	DuplicateEntry      = errors.New("email already used")
+	Unauthorized        = errors.New("unauthorized")
+	UserAlreadyMerchant = errors.New("user already as a merchant")
 )
 
 type repository struct {
@@ -76,6 +76,7 @@ func (r repository) GetByEmail(ctx context.Context, email string) (auth Auth, er
 	var result Auth
 	query := `
         SELECT
+			id,
 			email,
 			password,
 			role

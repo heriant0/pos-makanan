@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -67,6 +66,7 @@ func (h handler) login(ctx *fiber.Ctx) error {
 			ErrorCode: "40000",
 		})
 	}
+
 	tokenAuth, err := h.svc.login(ctx.UserContext(), req)
 	if err != nil {
 		errorCode := "40000"
@@ -97,14 +97,23 @@ func (h handler) login(ctx *fiber.Ctx) error {
 }
 
 func (h handler) updateRole(ctx *fiber.Ctx) error {
-	id := 1
-	err := h.svc.update(ctx.UserContext(), id)
+	userId := ctx.Locals("user_id")
+	userRole := ctx.Locals("user_role")
+
+	if userRole.(string) == "merchant" {
+		return infrafiber.BadRequest(ctx, infrafiber.Response{
+			Message:   "bad request",
+			Error:     "Unauthorized",
+			ErrorCode: "40001",
+		})
+	}
+
+	err := h.svc.update(ctx.UserContext(), userId.(int))
 	if err != nil {
-		fmt.Println("🚀 ~ file: handler.go ~ line 102 ~ func ~ err : ", err)
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
-			ErrorCode: "12345",
+			ErrorCode: "40001",
 		})
 	}
 

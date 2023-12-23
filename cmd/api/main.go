@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/heriant0/pos-makanan/domain/auth"
 	"github.com/heriant0/pos-makanan/domain/categories"
+	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
 	"github.com/heriant0/pos-makanan/internal/config"
 	"github.com/jmoiron/sqlx"
@@ -16,7 +16,8 @@ import (
 
 var cfg config.Config
 var postgresdb *sqlx.DB
-var redisdb *redis.Client
+
+// var redisdb *redis.Client
 var mongodb *mongo.Client
 var err error
 
@@ -32,15 +33,15 @@ func init() {
 		log.Println("database connected")
 	}
 
-	// Redis Connection
-	redisdb, err = database.ConnectRedis(cfg.RedisDB)
-	if err != nil {
-		panic(err)
-	}
+	// // Redis Connection
+	// redisdb, err = database.ConnectRedis(cfg.RedisDB)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	if redisdb != nil {
-		log.Println("redis connected")
-	}
+	// if redisdb != nil {
+	// 	log.Println("redis connected")
+	// }
 	// Mongo Connection
 	mongodb, err = database.ConnectMongo(cfg.MongoDB)
 	// cek apakah ada error atau engga
@@ -65,6 +66,7 @@ func main() {
 	v1 := router.Group("v1")
 	auth.InitRouter(v1, postgresdb)
 	categories.InitRouter(v1, postgresdb)
+	users.InitRouter(v1, postgresdb)
 
 	appPort := fmt.Sprintf(cfg.App.Port)
 	err = router.Listen(appPort)
