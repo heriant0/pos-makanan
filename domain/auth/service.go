@@ -3,11 +3,13 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/utility"
 )
+
+var redisdb *redis.Client
 
 type RepositoryInterface interface {
 	Register(ctx context.Context, auth Auth) (id int, err error)
@@ -53,14 +55,6 @@ func (s service) register(ctx context.Context, req AuthRequest) (err error) {
 	}
 
 	auth.Id = id
-	// create use here
-	// userPayload := users.User{
-	// 	Id: id,
-	// }
-	// err = s.repository.Create(ctx, userPayload)
-	// if err != nil {
-	// 	return err
-	// }
 	return nil
 }
 
@@ -82,20 +76,28 @@ func (s service) login(ctx context.Context, req AuthRequest) (payload AuthToken,
 	}
 
 	// generate access token
-	token, err := utility.GenerateToken(existingUser.Email)
-	fmt.Println("🚀 ~ file: service.go ~ line 88 ~ func ~ token : ", token)
+	tokenObject := AuthTokenPayload{
+		Id:    existingUser.Id,
+		Email: existingUser.Email,
+		Role:  existingUser.Role,
+	}
+
+	token, err := utility.GenerateToken(tokenObject)
 	if err != nil {
 		return AuthToken{}, err
 	}
+
 	payload = AuthToken{
 		Access_token: token,
 		Role:         existingUser.Role,
 	}
-	// return c.Status(http.StatusOK).JSON(fiber.Map{
-	// 	"token": token,
-	// })
-	// set token to redis
 
+	// set token to redis
+	// key := fmt.Sprintf("%d-%s", existingUser.Id, existingUser.Email)
+	// err = utility.SetData(key, token, 10*time.Second)
+	// if err != nil {
+	// 	return AuthToken{}, err
+	// }
 	return payload, nil
 }
 

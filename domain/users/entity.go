@@ -6,13 +6,13 @@ import (
 )
 
 type User struct {
-	Id int `db:"id" json:"id"`
-	Name        string    `db:"name" jsong:"name"`
-	DateOfBirth time.Time `db:"date_of_birth" json:"dateOfBirth"`
-	PhoneNumber string    `db:"phone_number" json:"phoneNumber"`
-	Gender      string    `db:"gender" json:"gender"`
-	Address     string    `db:"address" json:"address"`
-	ImageUrl    string    `db:"image_url" json:"imageUrl"`
+	Id          int    `db:"id" json:"id"`
+	Name        string `db:"name" json:"name"`
+	DateOfBirth string `db:"date_of_birth" json:"date_of_birth"`
+	PhoneNumber string `db:"phone_number" json:"phone_number"`
+	Gender      string `db:"gender" json:"gender"`
+	Address     string `db:"address" json:"address"`
+	ImageUrl    string `db:"image_url" json:"image_url"`
 }
 
 func requestBody(req UserRequest) (user User, err error) {
@@ -40,6 +40,8 @@ func (u User) validate() error {
 	} else if err := u.nameRequired(); err != nil {
 		return err
 	} else if err := u.addressRequired(); err != nil {
+		return err
+	} else if err := u.dateOfBirhtInvalid(); err != nil {
 		return err
 	} else if err := u.imageUrl(); err != nil {
 		return err
@@ -91,19 +93,20 @@ func (u User) addressRequired() error {
 	return nil
 }
 
-// func (u User) dob() error {
-// 	if u.B == "" {
+// func (u User) dateOfBirthRequired() error {
+// 	if u.DateOfBirth.IsZero() {
 // 		return DateOfBirthIsRequired
 // 	}
 // 	return nil
 // }
 
-// func (u User) x() error {
-// 	if {
-// 		return DateOfBirthIsInvalid
-// 	}
-// 	return nil
-// }
+func (u User) dateOfBirhtInvalid() error {
+	_, parseErr := time.Parse("2006-01-02", u.DateOfBirth)
+	if parseErr != nil {
+		return DateOfBirthIsInvalid
+	}
+	return nil
+}
 
 func (u User) imageUrl() error {
 	if u.ImageUrl == "" {

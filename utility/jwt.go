@@ -11,10 +11,10 @@ import (
 var cfgToken config.Token
 var secret = []byte(cfgToken.Secret)
 
-func GenerateToken(email string) (string, error) {
+func GenerateToken(payloadStr interface{}) (string, error) {
 	claims := jwt.MapClaims{
-		"email": email,
-		"exp":   jwt.NewNumericDate(time.Now().Add(10 * time.Minute)).Unix(),
+		"payload": payloadStr,
+		"exp":     jwt.NewNumericDate(time.Now().Add(30 * time.Minute)).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
