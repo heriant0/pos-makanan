@@ -1,0 +1,55 @@
+version: '3.1'
+services:
+  db:
+    container_name: dbpostgres
+    image: postgres:15.2
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=db_catalog
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  # migrate:
+  #   image: migrate/migrate:v4.16.2
+  #   profiles: ["tools"]
+  #   volumes:
+  #     - ./db/migrations:/migrations
+  #   entrypoint: 
+  #     [
+  #       "migrate",
+  #       "-path",
+  #       "/migrations",
+  #       "-database", "postgres://postgres:postgres@db:5432/db_catalog?sslmode=disable"
+  #     ]
+  #   command: ["up"]
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+  meilisearch:
+    image: "getmeili/meilisearch:v1.5"
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY : "asfasdfas"
+      
+volumes:
+  postgres_data:
+  mongodb_data:
