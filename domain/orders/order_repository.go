@@ -3,10 +3,8 @@ package orders
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,15 +12,13 @@ import (
 )
 
 type repository struct {
-	dbPg    *sqlx.DB
 	dbMongo *mongo.Client
 }
 
-func newRespository(db *sqlx.DB, dbMongo *mongo.Client) repository {
-	return repository{db, dbMongo}
+func newRespository(dbMongo *mongo.Client) repository {
+	return repository{dbMongo}
 }
 
-// insertOrder implements orderRepository.
 func (r repository) insertOrder(ctx context.Context, order Order) (err error) {
 	collection := r.dbMongo.Database(mongoDatabase).Collection(mongoOrderCollection)
 
@@ -39,7 +35,6 @@ func (r repository) insertOrder(ctx context.Context, order Order) (err error) {
 	return
 }
 
-// findLastestOrder implements orderRepository.
 func (r repository) findLastestOrderInvoiceId(ctx context.Context) (invoiceId string, err error) {
 	collection := r.dbMongo.Database(mongoDatabase).Collection(mongoOrderCollection)
 	options := options.FindOne().SetSort(bson.M{"invoice_id": -1})
@@ -48,7 +43,6 @@ func (r repository) findLastestOrderInvoiceId(ctx context.Context) (invoiceId st
 	err = collection.FindOne(ctx, bson.M{}, options).Decode(&lastOrder)
 	if err != nil {
 		if !errors.Is(err, mongo.ErrNoDocuments) {
-			fmt.Println("oyeah")
 			return
 		}
 		err = nil
@@ -58,7 +52,6 @@ func (r repository) findLastestOrderInvoiceId(ctx context.Context) (invoiceId st
 	return
 }
 
-// updateOrderStatus implements orderRepository.
 func (r repository) updateOrderStatus(ctx context.Context, invoice Invoice) (err error) {
 	collection := r.dbMongo.Database(mongoDatabase).Collection(mongoOrderCollection)
 
@@ -71,6 +64,18 @@ func (r repository) updateOrderStatus(ctx context.Context, invoice Invoice) (err
 			bson.M{"invoice_id": invoice.ExternalId},
 			bson.M{"$set": update},
 		)
+
+	return
+}
+
+func (r repository) findOneByInvoiceId(ctx context.Context, invoiceId string) (o Order, err error) {
+	collection := r.dbMongo.Database(mongoDatabase).Collection(mongoOrderCollection)
+
+	o = Order{}
+	err = collection.FindOne(ctx, bson.M{"invoice_id": invoiceId}).Decode(&o)
+	if err != nil {
+		return
+	}
 
 	return
 }

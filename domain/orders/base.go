@@ -8,9 +8,11 @@ import (
 )
 
 func Init(router fiber.Router, pg *sqlx.DB, mongo *mongo.Client, xendit paymentgateway.Xendit) {
-	orderRepo := newRespository(pg, mongo)
+	orderRepo := newRespository(mongo)
 	paymentRepo := newPaymentRepo(xendit)
-	svc := newService(orderRepo, paymentRepo)
+	productRepo := newProductRepo(pg)
+
+	svc := newService(orderRepo, paymentRepo, productRepo)
 	handler := newHandler(svc)
 
 	r := router.Group("orders")
