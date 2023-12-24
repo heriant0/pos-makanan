@@ -3,6 +3,9 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/jmoiron/sqlx"
@@ -42,6 +45,7 @@ func (r repository) Register(ctx context.Context, auth Auth) (id int, err error)
 	`
 	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - register: %w", err))
 		return
 	}
 
@@ -60,6 +64,7 @@ func (r repository) GetEmail(ctx context.Context, email string) (string, error) 
     `
 	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - GetEmail: %w", err))
 		return "", err
 	}
 	defer stmt.Close()
@@ -92,6 +97,7 @@ func (r repository) GetByEmail(ctx context.Context, email string) (auth Auth, er
 
 	err = stmt.GetContext(ctx, &result, map[string]interface{}{"email": email})
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - GetByEmail: %w", err))
 		return Auth{}, err
 	}
 
@@ -108,6 +114,7 @@ func (r repository) Create(ctx context.Context, model users.User) (err error) {
 	`
 	stmt, err := r.db.PrepareNamed(query)
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - Create: %w", err))
 		return
 	}
 
@@ -129,6 +136,7 @@ func (r repository) Update(ctx context.Context, id int) (err error) {
 	})
 
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - Update: %w", err))
 		return err
 	}
 

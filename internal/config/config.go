@@ -56,6 +56,10 @@ type Ngrok struct {
 	Token string `yaml:"token"`
 }
 
+type Log struct {
+	LogLevel string
+}
+
 type Config struct {
 	App        AppConfig
 	PostgresDB DBConfig
@@ -65,6 +69,7 @@ type Config struct {
 	Token      Token
 	Payment    Payment
 	Ngrok      Ngrok
+	Log        Log
 }
 
 var Cfg *Config

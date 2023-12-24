@@ -3,6 +3,9 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/heriant0/pos-makanan/domain/users"
@@ -34,12 +37,14 @@ func (s service) register(ctx context.Context, req AuthRequest) (err error) {
 	auth, err := requestBody(req)
 
 	if err != nil {
+
 		return
 	}
 
 	// check email
 	email, _ := s.repository.GetEmail(ctx, auth.Email)
 	if email != "" {
+		log.Error(fmt.Errorf("error service - register: %w", err))
 		return DuplicateEntry
 	}
 	// encrypt password
@@ -51,6 +56,7 @@ func (s service) register(ctx context.Context, req AuthRequest) (err error) {
 
 	id, err := s.repository.Register(ctx, payload)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - register: %w", err))
 		return err
 	}
 
@@ -62,6 +68,7 @@ func (s service) login(ctx context.Context, req AuthRequest) (payload AuthToken,
 	auth, err := requestBody(req)
 
 	if err != nil {
+		log.Error(fmt.Errorf("error service - login: %w", err))
 		return
 	}
 
@@ -105,6 +112,7 @@ func (s service) update(ctx context.Context, id int) (err error) {
 
 	err = s.repository.Update(ctx, id)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - update: %w", err))
 		return err
 	}
 

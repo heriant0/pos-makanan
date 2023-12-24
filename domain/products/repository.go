@@ -3,8 +3,10 @@ package products
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -39,6 +41,7 @@ func (r repository) Create(ctx context.Context, product Product, userId int) (id
 	`
 	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
+		log.Error(fmt.Errorf("error repository - Create: %w", err))
 		return
 	}
 

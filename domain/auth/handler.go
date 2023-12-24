@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gofiber/fiber/v2"
 	infrafiber "github.com/heriant0/pos-makanan/infra/fiber"
@@ -41,6 +44,7 @@ func (h handler) register(ctx *fiber.Ctx) error {
 		case PasswordLength:
 			errorCode = "40005"
 		}
+		log.Error(fmt.Errorf("error handler - register: %w", err))
 
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
@@ -60,6 +64,7 @@ func (h handler) login(ctx *fiber.Ctx) error {
 	var req = AuthRequest{}
 
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Error(fmt.Errorf("error handler - login: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -80,7 +85,7 @@ func (h handler) login(ctx *fiber.Ctx) error {
 		case PasswordLength:
 			errorCode = "40005"
 		}
-
+		log.Error(fmt.Errorf("error handler - login: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -110,6 +115,7 @@ func (h handler) updateRole(ctx *fiber.Ctx) error {
 
 	err := h.svc.update(ctx.UserContext(), userId.(int))
 	if err != nil {
+		log.Error(fmt.Errorf("error handler - updateRole: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),

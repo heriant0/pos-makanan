@@ -1,19 +1,20 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/heriant0/pos-makanan/domain/auth"
 	"github.com/heriant0/pos-makanan/domain/categories"
 	"github.com/heriant0/pos-makanan/domain/merchants"
-	"github.com/heriant0/pos-makanan/domain/products"
 	"github.com/heriant0/pos-makanan/domain/orders"
+	"github.com/heriant0/pos-makanan/domain/products"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
 	paymentgateway "github.com/heriant0/pos-makanan/external/payment-gateway"
 	"github.com/heriant0/pos-makanan/internal/config"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -57,6 +58,16 @@ func init() {
 		panic("mongodb not connected")
 	}
 	log.Println("mongodb connected")
+
+	// setup logrus logging
+	logLevel, err := log.ParseLevel(cfg.Log.LogLevel)
+	if err != nil {
+		errMessage := fmt.Errorf("error parse log level: %w", err)
+		panic(errMessage)
+	}
+
+	log.SetLevel(logLevel)
+	log.SetFormatter(&log.JSONFormatter{})
 }
 
 func main() {

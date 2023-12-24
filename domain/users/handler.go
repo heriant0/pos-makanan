@@ -1,10 +1,12 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	infrafiber "github.com/heriant0/pos-makanan/infra/fiber"
+	log "github.com/sirupsen/logrus"
 )
 
 type handler struct {
@@ -23,6 +25,7 @@ func (h handler) create(ctx *fiber.Ctx) error {
 	userRole := ctx.Locals("user_role")
 
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Error(fmt.Errorf("error handler - create: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -61,6 +64,7 @@ func (h handler) create(ctx *fiber.Ctx) error {
 			errorCode = "40009"
 		}
 
+		log.Error(fmt.Errorf("error handler - create: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -80,6 +84,7 @@ func (h handler) getProfile(ctx *fiber.Ctx) error {
 
 	user, err := h.svc.getProfile(ctx.UserContext(), userId.(int))
 	if err != nil {
+		log.Error(fmt.Errorf("error handler - getProfile: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -107,6 +112,7 @@ func (h handler) update(ctx *fiber.Ctx) error {
 	userId := ctx.Locals("user_id")
 
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Error(fmt.Errorf("error handler - update: %w", err))
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -137,6 +143,7 @@ func (h handler) update(ctx *fiber.Ctx) error {
 		case ImageUrlIsRequird:
 			errorCode = "40009"
 		}
+		log.Error(fmt.Errorf("error handler - update: %w", err))
 
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
