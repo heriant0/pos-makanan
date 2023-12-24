@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/heriant0/pos-makanan/domain/auth"
 	"github.com/heriant0/pos-makanan/domain/categories"
+	"github.com/heriant0/pos-makanan/domain/merchants"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
 	"github.com/heriant0/pos-makanan/internal/config"
@@ -65,8 +66,9 @@ func main() {
 
 	v1 := router.Group("v1")
 	auth.InitRouter(v1, postgresdb)
-	categories.InitRouter(v1, postgresdb)
 	users.InitRouter(v1, postgresdb)
+	merchants.InitRouter(v1, postgresdb)
+	categories.InitRouter(v1, postgresdb)
 
 	appPort := fmt.Sprintf(cfg.App.Port)
 	err = router.Listen(appPort)
