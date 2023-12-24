@@ -41,6 +41,21 @@ type Token struct {
 	AccessDuration int
 }
 
+type RedirectUrl struct {
+	Success string
+	Failure string
+}
+
+type Payment struct {
+	SecretKey     string      `yaml:"secret_key"`
+	RedirectUrl   RedirectUrl `yaml:"redirect_url"`
+	CallbackToken string      `yaml:"callback_token"`
+}
+
+type Ngrok struct {
+	Token string `yaml:"token"`
+}
+
 type Config struct {
 	App        AppConfig
 	PostgresDB DBConfig
@@ -48,15 +63,25 @@ type Config struct {
 	MongoDB    MongoConfig
 	Bcrypt     Bcrypt
 	Token      Token
+	Payment    Payment
+	Ngrok      Ngrok
 }
 
-func LoadConfig(fileName string) (cfg Config) {
+var Cfg *Config
+
+func LoadConfig(fileName string) (cfg *Config) {
 	file, err := os.ReadFile(fileName)
 	if err != nil {
 		log.Println("error:", err.Error())
 	}
 
 	err = yaml.Unmarshal(file, &cfg)
+	if err != nil {
+		log.Println("error :", err.Error())
+		return
+	}
+
+	err = yaml.Unmarshal(file, &Cfg)
 	if err != nil {
 		log.Println("error :", err.Error())
 		return

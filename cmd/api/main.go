@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,14 +8,16 @@ import (
 	"github.com/heriant0/pos-makanan/domain/categories"
 	"github.com/heriant0/pos-makanan/domain/merchants"
 	"github.com/heriant0/pos-makanan/domain/products"
+	"github.com/heriant0/pos-makanan/domain/orders"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
+	paymentgateway "github.com/heriant0/pos-makanan/external/payment-gateway"
 	"github.com/heriant0/pos-makanan/internal/config"
 	"github.com/jmoiron/sqlx"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var cfg config.Config
+var cfg *config.Config
 var postgresdb *sqlx.DB
 
 // var redisdb *redis.Client
@@ -44,6 +45,7 @@ func init() {
 	// if redisdb != nil {
 	// 	log.Println("redis connected")
 	// }
+
 	// Mongo Connection
 	mongodb, err = database.ConnectMongo(cfg.MongoDB)
 	// cek apakah ada error atau engga
@@ -58,7 +60,6 @@ func init() {
 }
 
 func main() {
-
 	router := fiber.New(fiber.Config{
 		AppName: "POS - Makanan",
 		// BodyLimit: 2 * 1024 * 1024,
@@ -66,15 +67,19 @@ func main() {
 	})
 
 	v1 := router.Group("v1")
+
+	xenditClient := paymentgateway.NewXendit(cfg.Payment.SecretKey)
+
 	auth.InitRouter(v1, postgresdb)
 	users.InitRouter(v1, postgresdb)
 	merchants.InitRouter(v1, postgresdb)
 	categories.InitRouter(v1, postgresdb)
 	products.InitRouter(v1, postgresdb)
+	users.InitRouter(v1, postgresdb)
+	orders.Init(v1, postgresdb, mongodb, xenditClient)
 
-	appPort := fmt.Sprintf(cfg.App.Port)
-	err = router.Listen(appPort)
+	err = router.Listen(cfg.App.Port)
 	if err != nil {
-		log.Panic("cannot start the apps")
+		log.Panic("cannot start the apps ", err.Error())
 	}
 }
