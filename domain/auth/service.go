@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/heriant0/pos-makanan/domain/users"
-	"github.com/heriant0/pos-makanan/utility"
 )
 
 var redisdb *redis.Client
@@ -47,20 +46,14 @@ func (s service) register(ctx context.Context, req AuthRequest) (err error) {
 		log.Error(fmt.Errorf("error service - register: %w", err))
 		return DuplicateEntry
 	}
-	// encrypt password
-	hashedPassword := utility.HashPassword(auth.Password)
-	payload := Auth{
-		Email:    auth.Email,
-		Password: hashedPassword,
-	}
 
-	id, err := s.repository.Register(ctx, payload)
+	payload := EncryptPassword(ctx, req)
+	_, err = s.repository.Register(ctx, payload)
 	if err != nil {
 		log.Error(fmt.Errorf("error service - register: %w", err))
 		return err
 	}
 
-	auth.Id = id
 	return nil
 }
 
@@ -74,14 +67,14 @@ func (s service) login(ctx context.Context, req AuthRequest) (payload AuthToken,
 
 	existingUser, err := s.repository.GetByEmail(ctx, auth.Email)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - login: %w", err))
 		return AuthToken{}, err
 	}
 
-	isVerified := utility.VerifyPassword(req.Password, existingUser.Password)
+	isVerified := VerifyPassword(req.Password, existingUser.Password)
 	if !isVerified {
 		return AuthToken{}, errors.New("password verification failed")
 	}
-
 	// generate access token
 	tokenObject := AuthTokenPayload{
 		Id:    existingUser.Id,
@@ -89,8 +82,9 @@ func (s service) login(ctx context.Context, req AuthRequest) (payload AuthToken,
 		Role:  existingUser.Role,
 	}
 
-	token, err := utility.GenerateToken(tokenObject)
+	token, err := GenerateToken(tokenObject)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - login: %w", err))
 		return AuthToken{}, err
 	}
 
