@@ -7,6 +7,7 @@ type ProductResponse struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 	Stock       int     `json:"stock"`
+	ImageUrl    string  `json:"image_url"`
 }
 
 type ProductRequest struct {
@@ -15,4 +16,5 @@ type ProductRequest struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 	Stock       int     `json:"stock"`
+	ImageUrl    string  `json:"image_url"`
 }

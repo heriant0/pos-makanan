@@ -23,6 +23,7 @@ func requestBody(req ProductRequest) (product Product, err error) {
 		Description: req.Description,
 		Price:       req.Price,
 		Stock:       req.Stock,
+		ImageUrl:    req.ImageUrl,
 	}
 
 	err = product.validate()

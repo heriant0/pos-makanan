@@ -8,27 +8,32 @@ import (
 )
 
 var (
-	ErrNameIsRequired       = errors.New("name is required")
-	ErrStockIsRequired      = errors.New("stock is required")
-	ErrPriceIsRequired      = errors.New("price is required")
-	ErrCategoryIdIsRequired = errors.New("categoryId is required")
-	ErrProductNotFound      = errors.New("product not found")
+	ErrPriceIsRequired       = errors.New("price is required")
+	ErrPriceIsInvalid        = errors.New("price is invalid")
+	ErrStockIsRequired       = errors.New("stock is required")
+	ErrStockIsInvalid        = errors.New("stock is invalid")
+	ErrNameIsRequired        = errors.New("name is required")
+	ErrDescriptionIsRequierd = errors.New("description is required")
+	ErrImageUrlIsRequierd    = errors.New("image url is required")
+	ErrCategoryIdIsRequired  = errors.New("categoryId is required")
+	ErrCategoryIdIsNotFound  = errors.New("categoryId is not found")
+	ErrInvalidRole           = errors.New("invalid role")
 )
 
 type repository struct {
 	db *sqlx.DB
 }
 
-func newRespository(db *sqlx.DB) repository {
+func newRepository(db *sqlx.DB) repository {
 	return repository{db: db}
 }
 
-func (r repository) Create(ctx context.Context, product Product) (id int, err error) {
+func (r repository) Create(ctx context.Context, product Product, userId int) (id int, err error) {
 	query := `
 		INSERT INTO  products (
-			category_id, name, description, price, stock
+			category_id, name, description, price, stock, image_url
 		) VALUES (
-			:category_id, :name, :description, :price, :stock
+			:category_id, :name, :description, :price, :stock, :image_url
 		)
 		RETURNING id
 	`

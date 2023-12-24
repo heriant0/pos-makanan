@@ -7,6 +7,7 @@ import (
 	"github.com/heriant0/pos-makanan/domain/auth"
 	"github.com/heriant0/pos-makanan/domain/categories"
 	"github.com/heriant0/pos-makanan/domain/merchants"
+	"github.com/heriant0/pos-makanan/domain/products"
 	"github.com/heriant0/pos-makanan/domain/orders"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
@@ -73,6 +74,7 @@ func main() {
 	users.InitRouter(v1, postgresdb)
 	merchants.InitRouter(v1, postgresdb)
 	categories.InitRouter(v1, postgresdb)
+	products.InitRouter(v1, postgresdb)
 	users.InitRouter(v1, postgresdb)
 	orders.Init(v1, postgresdb, mongodb, xenditClient)
 
