@@ -8,6 +8,7 @@ import (
 	"github.com/heriant0/pos-makanan/domain/auth"
 	"github.com/heriant0/pos-makanan/domain/categories"
 	"github.com/heriant0/pos-makanan/domain/merchants"
+	"github.com/heriant0/pos-makanan/domain/products"
 	"github.com/heriant0/pos-makanan/domain/users"
 	"github.com/heriant0/pos-makanan/external/database"
 	"github.com/heriant0/pos-makanan/internal/config"
@@ -69,6 +70,7 @@ func main() {
 	users.InitRouter(v1, postgresdb)
 	merchants.InitRouter(v1, postgresdb)
 	categories.InitRouter(v1, postgresdb)
+	products.InitRouter(v1, postgresdb)
 
 	appPort := fmt.Sprintf(cfg.App.Port)
 	err = router.Listen(appPort)

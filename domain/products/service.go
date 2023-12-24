@@ -3,7 +3,7 @@ package products
 import "context"
 
 type RepostoryInterface interface {
-	Create(ctx context.Context, product Product) (id int, err error)
+	Create(ctx context.Context, product Product, userId int) (id int, err error)
 }
 
 type service struct {
@@ -16,14 +16,14 @@ func newService(repo RepostoryInterface) service {
 	}
 }
 
-func (s service) create(ctx context.Context, req ProductRequest) (err error) {
+func (s service) create(ctx context.Context, req ProductRequest, userId int) (err error) {
 	product, err := requestBody(req)
 
 	if err != nil {
 		return
 	}
 
-	id, err := s.repository.Create(ctx, product)
+	id, err := s.repository.Create(ctx, product, userId)
 	if err != nil {
 		return err
 	}
