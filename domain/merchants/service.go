@@ -1,6 +1,11 @@
 package merchants
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+)
 
 type UserRepository interface {
 	Create(ctx context.Context, user Merchant, mId int) (id int, err error)
@@ -27,6 +32,8 @@ func (s service) create(ctx context.Context, req MerchantRequest, mId int) (err 
 
 	_, err = s.repository.Create(ctx, merchant, mId)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - create: %w", err))
+
 		return err
 	}
 
@@ -37,6 +44,8 @@ func (s service) update(ctx context.Context, req MerchantRequest, userId int) (e
 	err = s.repository.Update(ctx, req, userId)
 
 	if err != nil {
+		log.Error(fmt.Errorf("error service - update: %w", err))
+
 		return err
 	}
 
@@ -47,6 +56,8 @@ func (s service) getProfile(ctx context.Context, mId int) (merchant Merchant, er
 
 	merchant, err = s.repository.GetProfile(ctx, mId)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - getProfile: %w", err))
+
 		return merchant, err
 	}
 

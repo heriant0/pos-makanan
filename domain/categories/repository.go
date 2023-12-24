@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -32,6 +34,7 @@ func (r repository) GetAll(ctx context.Context) (categoryList []Category, err er
 	err = r.db.SelectContext(ctx, &categoryList, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			log.Error(fmt.Errorf("error repository - GetAll: %w", ErrCategoryNotFound))
 			return nil, ErrCategoryNotFound
 		}
 
@@ -39,6 +42,7 @@ func (r repository) GetAll(ctx context.Context) (categoryList []Category, err er
 	}
 
 	if len(categoryList) == 0 {
+		log.Error(fmt.Errorf("error repository - GetAll: %w", ErrCategoryNotFound))
 		return nil, ErrCategoryNotFound
 	}
 

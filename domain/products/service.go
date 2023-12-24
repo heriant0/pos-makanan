@@ -1,6 +1,11 @@
 package products
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+)
 
 type RepostoryInterface interface {
 	Create(ctx context.Context, product Product, userId int) (id int, err error)
@@ -20,11 +25,14 @@ func (s service) create(ctx context.Context, req ProductRequest, userId int) (er
 	product, err := requestBody(req)
 
 	if err != nil {
+		log.Error(fmt.Errorf("error service - create: %w", err))
+
 		return
 	}
 
 	id, err := s.repository.Create(ctx, product, userId)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - create: %w", err))
 		return err
 	}
 

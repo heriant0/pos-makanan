@@ -1,9 +1,11 @@
 package categories
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 type handler struct {
@@ -19,6 +21,8 @@ func newHandler(svc service) handler {
 func (h handler) list(ctx *fiber.Ctx) error {
 	categoryList, err := h.svc.GetAll(ctx.UserContext())
 	if err != nil {
+		log.Error(fmt.Errorf("error handler - list: %w", err))
+
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message":       "unknown error",
 			"error_code":    "999999",

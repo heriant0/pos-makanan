@@ -1,6 +1,11 @@
 package categories
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+)
 
 type RepostiryInterface interface {
 	GetAll(ctx context.Context) (categoryList []Category, err error)
@@ -19,6 +24,8 @@ func newService(repository RepostiryInterface) service {
 func (s service) GetAll(ctx context.Context) (categoryList []Category, err error) {
 	categoryList, err = s.repository.GetAll(ctx)
 	if err != nil {
+		log.Error(fmt.Errorf("error service - GetAll: %w", err))
+
 		if err == ErrCategoryNotFound {
 			return []Category{}, err
 		}

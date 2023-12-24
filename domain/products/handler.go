@@ -1,10 +1,12 @@
 package products
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	infrafiber "github.com/heriant0/pos-makanan/infra/fiber"
+	log "github.com/sirupsen/logrus"
 )
 
 type handler struct {
@@ -23,6 +25,8 @@ func (h handler) create(ctx *fiber.Ctx) error {
 	userRole := ctx.Locals("user_role")
 
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Error(fmt.Errorf("error handler - create: %w", err))
+
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
 			Error:     err.Error(),
@@ -61,6 +65,7 @@ func (h handler) create(ctx *fiber.Ctx) error {
 		case ErrCategoryIdIsNotFound:
 			errorCode = "40010"
 		}
+		log.Error(fmt.Errorf("error handler - create: %w", err))
 
 		return infrafiber.BadRequest(ctx, infrafiber.Response{
 			Message:   "bad request",
