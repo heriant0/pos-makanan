@@ -1,6 +1,13 @@
 package auth
 
-import "net/mail"
+import (
+	"context"
+	"fmt"
+	"net/mail"
+
+	"github.com/heriant0/pos-makanan/utility"
+	log "github.com/sirupsen/logrus"
+)
 
 type Auth struct {
 	Id       int    `db:"id" json:"id"`
@@ -9,6 +16,33 @@ type Auth struct {
 	Role     string `db:"role" json:"role"`
 }
 
+func EncryptPassword(ctx context.Context, req AuthRequest) (auth Auth) {
+	encrypted := utility.HashPassword(req.Password)
+	result := Auth{
+		Email:    req.Email,
+		Password: encrypted,
+	}
+	return result
+}
+
+func VerifyPassword(reqPassword string, existingPassword string) bool {
+	isVerified := utility.VerifyPassword(reqPassword, existingPassword)
+	if !isVerified {
+		log.Error(fmt.Errorf("error entity - VerifyPassword: %s", "password verification failed"))
+		return false
+	}
+	return true
+}
+
+func GenerateToken(object interface{}) (string, error) {
+	token, err := utility.GenerateToken(object)
+	if err != nil {
+		log.Error(fmt.Errorf("error entity - GenerateToken: %w", err))
+		return "", err
+	}
+
+	return token, nil
+}
 func requestBody(req AuthRequest) (auth Auth, err error) {
 	auth = Auth{
 		Email:    req.Email,
