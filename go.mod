@@ -8,6 +8,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.2.0
+	github.com/xendit/xendit-go/v3 v3.7.0
 	go.mongodb.org/mongo-driver v1.2.1
 	golang.org/x/crypto v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -15,7 +16,7 @@ require (
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
 
@@ -33,12 +34,12 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.50.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/xdg/scram v1.0.5 // indirect
 	github.com/xdg/stringprep v1.0.3 // indirect
+	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 )
